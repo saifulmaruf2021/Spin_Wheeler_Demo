@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Spin Wheeler Demo</string>
+    <string name="spinner">Spinner</string>
 </resources>
