@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private void handleSpinResult(int sector) {
         // Handle the result of the spin
         // For example, display the selected category
-        String[] categories = {"1", "2", "3", "2", "2", "1", "2", "5"};
+        String[] categories = {"1", "2", "3", "2", "2", "1", "2", "3"};
         String selectedCategory = categories[sector];
         // Display the selected category (you could use a Toast, a TextView, etc.)
         Toast.makeText(this,"Selected: " + selectedCategory,Toast.LENGTH_SHORT).show();

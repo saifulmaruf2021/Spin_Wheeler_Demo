@@ -12,7 +12,7 @@
         android:layout_width="5000dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@drawable/wheeler" />
+        android:src="@drawable/wheeler_1" />
 
     <ImageButton
         android:id="@+id/spin"
