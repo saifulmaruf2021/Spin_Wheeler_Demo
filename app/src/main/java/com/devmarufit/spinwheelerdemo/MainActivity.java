@@ -3,6 +3,7 @@ package com.devmarufit.spinwheelerdemo;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
@@ -32,14 +33,13 @@ public class MainActivity extends AppCompatActivity {
     private TextView remain_lives;
     private boolean isSpinning = false;
     private String selectedCategory = "";
-    private Button ad_btn;
+    private Button ad_btn, new_activity;
     private SharedPreferences sharedPreferences;
     private static final String PREFS_NAME = "QuizPrefs";
     private static final String KEY_LIVES = "lives";
     private RewardedAd mRewardedAd;
     private final String AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
-    private int CURRENT_LIVES = 0;
-
+    private int CURRENT_LIVES;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,25 +50,20 @@ public class MainActivity extends AppCompatActivity {
         wheel = findViewById(R.id.wheel);
         remain_lives = findViewById(R.id.remain_lives);
 
+        new_activity = findViewById(R.id.new_activity);
+        new_activity.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, SecondActivity.class));
+        });
+
         loadRewardedAd();
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         CURRENT_LIVES = sharedPreferences.getInt(KEY_LIVES, 0);
+        remain_lives.setText(String.valueOf(CURRENT_LIVES));
 
         spin.setOnClickListener(v -> {
             if (!isSpinning) {
                 spinTheWheel();
-                selectedCategory= remain_lives.getText().toString();
-                selectedCategory = selectedCategory+CURRENT_LIVES;
-                remain_lives.setText(selectedCategory);
-               /* if (!existing_value.isEmpty()){
-                    current_lives = Integer.parseInt(existing_value);
-                    TOTAL_CURRENT_LIVES += current_lives;
-
-                    remain_lives.setText(String.valueOf(TOTAL_CURRENT_LIVES));// Initialize currentLives
-
-                }*/
-
             }
         });
 
@@ -76,11 +71,6 @@ public class MainActivity extends AppCompatActivity {
         ad_btn.setOnClickListener(v -> {
             showRewardedAd();
         });
-
-        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        CURRENT_LIVES = sharedPreferences.getInt(KEY_LIVES, 0);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.apply();
 
     }
 
@@ -112,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
                 isSpinning = false;
                 int resultSector = (degree % 360) / SECTORS;
                 handleSpinResult(resultSector);
+
             }
         });
         animator.start();
@@ -125,10 +116,24 @@ public class MainActivity extends AppCompatActivity {
         //String[] categories = {"5", "2", "1", "2", "2", "3", "2", "1"};
         selectedCategory = categories[sector];
         // Display the selected category (you could use a Toast, a TextView, etc.)
+        spinLives();
+        remain_lives.setText(selectedCategory);
 
         Toast.makeText(this, "Selected: " + selectedCategory, Toast.LENGTH_SHORT).show();
-        remain_lives.setText(selectedCategory);// Initialize currentLives
     }
+
+    private void spinLives() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        CURRENT_LIVES = sharedPreferences.getInt(KEY_LIVES, 0); // Default to 0 if not found
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(KEY_LIVES, Integer.parseInt(selectedCategory));
+        editor.apply();
+        Toast.makeText(this, "You have earned " + selectedCategory + " life/lives!", Toast.LENGTH_SHORT).show();
+
+    }
+
+
 
     private void loadRewardedAd() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
@@ -174,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                     // Handle the reward
                     //int rewardAmount = rewardItem.getAmount();
                     //String rewardType = rewardItem.getType();
-                    selectedCategory = rewardItem.getType();
+                    //selectedCategory = rewardItem.getType();
                     spinTheWheel();
                     //Toast.makeText(MainActivity.this, "User earned reward: " + " " + selectedCategory, Toast.LENGTH_SHORT).show();
                     remain_lives.setText(selectedCategory);// Initialize currentLives
@@ -184,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "The rewarded ad wasn't ready yet.", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
 }
